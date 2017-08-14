@@ -1,0 +1,14 @@
+{
+  "name": "mighty-js",
+  "version": "1.0.0",
+  "description": "Object transformer library.",
+  "main": "mighty.js",
+  "scripts": {
+    "test": "mocha test/"
+  },
+  "author": "Cydney Auman",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^4.0.2"
+  }
+}
