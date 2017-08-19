@@ -52,27 +52,25 @@ module.exports = {
         * @description      removes key/value from object
         * @arguments
             obj             original object passed into mighty
-            key             key that should be removed
+            keys            path of keys as dot notation
     */
-    clear(obj, key) {
-        delete obj[key]
-    },
-
-    /*
-        * @description      removes nested key/value from object
-        * @arguments
-            obj             original object passed into mighty
-            keys            path of keys as an array
-                             the last key/value in the array will be removed.
-    */
-    clearNested(obj, keys) {
-        const base = {}
+    clear(obj, key, last) {
+        const keys = key.split('.')
 
         keys.reduce((acc, key, index) => {
             if (index !== keys.length - 1)
-                return acc[key] = {}
-        }, base)
+                return acc[key]
+            else if (Object.keys(acc).length > 1)
+                keys.length = 0
+            else
+                last = keys.pop()
 
-        Object.assign(obj, base)
+            delete acc[key]
+        }, obj)
+
+        if (keys.length)
+            this.clear(obj, keys.join('.'), last)
+        else
+            return obj
     }
 }

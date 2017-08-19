@@ -14,9 +14,15 @@ class Mighty {
 
         this.value = util.extract(this.obj, this.original)
         const composed = util.build(this.key, this.value)
-        Object.assign(this.obj, composed)
 
-        this.remove(this.original.split('.').shift())
+        Object.keys(composed).forEach((key, index) => {
+            if (this.obj[key])
+                Object.assign(this.obj[key], composed[key])
+            else
+                Object.assign(this.obj, composed)
+        })
+
+        this.remove(this.original)
 
         return this
     }
@@ -33,12 +39,8 @@ class Mighty {
     }
 
     remove(key) {
-        const keys = key.split('.')
 
-        if (keys.length === 1)
-            util.clear(this.obj, key)
-        else
-            util.clearNested(this.obj, keys)
+        util.clear(this.obj, key)
 
         return this
     }
