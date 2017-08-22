@@ -15,11 +15,12 @@ describe('Mighty JS', () => {
                 state: 'California'
             }
 
-            mighty(obj)
+           mighty(obj)
                 .morph('transforms', 'zord')
                 .morph('city', 'location.city')
                 .morph('state', 'location.state')
                 .result
+
 
             expect(obj).to.not.have.property('transforms')
             expect(obj).to.not.have.property('city')
@@ -84,145 +85,229 @@ describe('Mighty JS', () => {
         })
     })
 
-    describe.skip('coerce', () => {
+    describe('combine', () => {
+        it('should combine keys', (done) => {
+            const obj = {
+                _id: '4',
+                first: 'Kim',
+                last: 'Hart',
+                ranger: 'Pink',
+                transforms: 'pterodactyl dinozord',
+                city: 'Angel Grove',
+                state: 'California'
+            }
+
+            mighty(obj)
+                .combine(['first', 'last'], 'name')
+                .result
+
+            expect(obj).to.have.property('name')
+            expect(obj.name).to.equal('Kim Hart')
+
+            done()
+        })
+
+        it('should combine nested keys', (done) => {
+            const obj = {
+                _id: '4',
+                name: 'Kim Hart',
+                ranger: 'Pink',
+                transforms: 'pterodactyl dinozord',
+                location: {
+                    city: 'Angel Grove',
+                    state: 'California'
+                }
+            }
+
+            mighty(obj)
+                .combine(['location.city', 'location.state'], 'homewtown', ', ')
+                .result
+
+            expect(obj).to.not.have.property('location')
+            expect(obj).to.have.property('homewtown')
+            expect(obj.homewtown).to.equal('Angel Grove, California')
+
+            done()
+        })
+    })
+
+    describe('coerce', () => {
         it('should coerce to string', (done) => {
             const obj = {
-                _id: 12345,
-                name: 'Test'
+                _id: 4,
+                name: 'Kim Hart',
+                ranger: 'Pink',
+                transforms: 'pterodactyl dinozord',
+                location: {
+                    city: 'Angel Grove',
+                    state: 'California'
+                }
             }
 
             mighty(obj)
                 .coerce('_id', 'string')
                 .result
 
-            expect(obj).to.have.property('_id').and.to.equal('12345')
-            expect(obj).to.have.property('name').and.to.equal('Test')
+            expect(obj).to.have.property('_id').and.to.equal('4')
 
             done()
         })
 
         it('should coerce to number', (done) => {
             const obj = {
-                _id: '12345',
-                name: 'Test'
+                _id: '4',
+                name: 'Kim Hart',
+                ranger: 'Pink',
+                transforms: 'pterodactyl dinozord',
+                location: {
+                    city: 'Angel Grove',
+                    state: 'California'
+                }
             }
 
             mighty(obj)
                 .coerce('_id', 'number')
                 .result
 
-            expect(obj).to.have.property('_id').and.to.equal(12345)
-            expect(obj).to.have.property('name').and.to.equal('Test')
+            expect(obj).to.have.property('_id').and.to.equal(4)
 
             done()
         })
 
         it('should morph and coerce to string', (done) => {
             const obj = {
-                _id: 12345,
-                name: 'Test'
+                _id: 4,
+                name: 'Kim Hart',
+                ranger: 'Pink',
+                transforms: 'pterodactyl dinozord',
+                location: {
+                    city: 'Angel Grove',
+                    state: 'California'
+                }
             }
 
             mighty(obj)
                 .morph('_id', 'id').coerce('string')
                 .result
 
-            expect(obj).to.have.property('id').and.to.equal('12345')
-            expect(obj).to.have.property('name').and.to.equal('Test')
+            expect(obj).to.have.property('id').and.to.equal('4')
 
             done()
         })
 
         it('should morph and coerce to number', (done) => {
             const obj = {
-                _id: '12345',
-                name: 'Test'
+                _id: 4,
+                name: 'Kim Hart',
+                ranger: 'Pink',
+                transforms: 'pterodactyl dinozord',
+                location: {
+                    city: 'Angel Grove',
+                    state: 'California'
+                }
             }
 
             mighty(obj)
                 .morph('_id', 'id').coerce('number')
                 .result
 
-            expect(obj).to.have.property('id').and.to.equal(12345)
-            expect(obj).to.have.property('name').and.to.equal('Test')
+            expect(obj).to.have.property('id').and.to.equal(4)
 
             done()
         })
     })
 
-    describe.skip('add', () => {
+    describe('add', () => {
         it('should add a new key/value pair', (done) => {
             const obj = {
-                _id: 12345,
-                name: 'Test'
+                _id: 4,
+                name: 'Kim Hart',
+                ranger: 'Pink',
+                transforms: 'pterodactyl dinozord',
+                location: {
+                    city: 'Angel Grove',
+                    state: 'California'
+                }
             }
 
             mighty(obj)
-                .add('key', 'value')
+                .add('location.coordinates', ['34.0522 N', '118.2437 W'])
                 .result
 
-            expect(obj).to.have.property('_id').and.to.equal(12345)
-            expect(obj).to.have.property('name').and.to.equal('Test')
-            expect(obj).to.have.property('key').and.to.equal('value')
+            expect(obj.location).to.have.property('coordinates').and.to.deep.equal(['34.0522 N', '118.2437 W'])
+            expect(obj.location).to.have.property('city').and.to.deep.equal('Angel Grove')
+            expect(obj.location).to.have.property('state').and.to.deep.equal('California')
 
             done()
         })
 
         it('should add a new key with default value', (done) => {
             const obj = {
-                _id: 12345,
-                name: 'Test'
+                _id: 4,
+                name: 'Kim Hart',
+                ranger: 'Pink',
+                transforms: 'pterodactyl dinozord',
+                location: {
+                    city: 'Angel Grove',
+                    state: 'California'
+                }
             }
 
             mighty(obj)
-                .add('key')
+                .add('location.coordinates')
                 .result
 
-            expect(obj).to.have.property('_id').and.to.equal(12345)
-            expect(obj).to.have.property('name').and.to.equal('Test')
-            expect(obj).to.have.property('key')
+            expect(obj.location).to.have.property('coordinates')
+            expect(obj.location).to.have.property('city').and.to.deep.equal('Angel Grove')
+            expect(obj.location).to.have.property('state').and.to.deep.equal('California')
 
             done()
         })
     })
 
-    describe.skip('remove', function () {
+    describe('remove', function () {
         it('should remove key', (done) => {
             const obj = {
-                _id: 12345,
-                name: 'Test'
+                _id: 4,
+                name: 'Kim Hart',
+                ranger: 'Pink',
+                transforms: 'pterodactyl dinozord',
+                location: {
+                    city: 'Angel Grove',
+                    state: 'California'
+                }
             }
 
             mighty(obj)
-                .remove('name')
+                .remove('ranger')
                 .result
 
-            expect(obj).to.have.property('_id').and.to.equal(12345)
-            expect(obj).to.not.have.property('name')
+            expect(obj).to.not.have.property('ranger')
 
             done()
         })
 
         it('should remove a nested key', (done) => {
             const obj = {
-                _id: 12345,
-                name: 'Test',
-                some: {
-                    nested: {
-                        property: [1, 2, 3, 4, 5]
-                    }
+                _id: 4,
+                name: 'Kim Hart',
+                ranger: 'Pink',
+                transforms: 'pterodactyl dinozord',
+                location: {
+                    city: 'Angel Grove',
+                    state: 'California',
+                    coordinates: ['34.0522 N', '118.2437 W']
                 }
             }
 
             mighty(obj)
-                .remove('some.nested.property')
+                .remove('location.coordinates')
                 .result
 
-            expect(obj).to.have.property('_id').and.to.equal(12345)
-            expect(obj).to.have.property('name').and.to.equal('Test')
-            expect(obj).to.have.property('some')
-            expect(obj.some).to.have.property('nested')
-            expect(obj.some.nested).to.not.have.property('property')
+
+            expect(obj.location).to.not.have.property('coordinates')
+            expect(obj.location).to.have.property('city').and.to.deep.equal('Angel Grove')
+            expect(obj.location).to.have.property('state').and.to.deep.equal('California')
 
             done()
         })

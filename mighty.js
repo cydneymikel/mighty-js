@@ -8,63 +8,72 @@ class Mighty {
             this.obj = obj
     }
 
-    morph(original, key) {
-        this.original = original
-        this.key = key
+    morph(original, destination) {
+        this.destination = destination
 
-        this.value = util.extract(this.obj, this.original)
-        const composed = util.build(this.key, this.value)
+        this.value = util.extract(this.obj, original)
+        const composed = util.build(this.destination, this.value)
 
-        Object.keys(composed).forEach((key, index) => {
-            if (this.obj[key])
-                Object.assign(this.obj[key], composed[key])
-            else
-                Object.assign(this.obj, composed)
-        })
+        util.assign(this.obj, composed)
 
-        this.remove(this.original)
+        this.remove(original)
 
         return this
     }
 
-    add(key, value) {
-        this.key = key
+    combine(keys, destination, seperator) {
+        this.destination = destination
+
+        const values = []
+        keys.forEach(key => {
+            values.push(util.extract(this.obj, key))
+            this.remove(key)
+        }, this)
+
+        this.value = util.merge(values, this.destination, seperator)
+        const composed = util.build(this.destination, this.value)
+        util.assign(this.obj, composed)
+
+        return this
+    }
+
+    add(destination, value) {
+        this.destination = destination
         this.value = value
 
-        const composed = util.build(this.key, this.value)
+        const composed = util.build(this.destination, this.value)
 
-        Object.assign(this.obj, composed)
+        util.assign(this.obj, composed)
 
         return this
     }
 
     remove(key) {
-
         util.clear(this.obj, key)
 
         return this
     }
 
-    coerce(key, type) {
-        if (this.key) {
-            type = key
+    coerce(destination, type) {
+        if (this.destination) {
+            type = destination
         } else {
-            this.key = key
-            this.value = util.extract(this.obj, this.key)
+            this.destination = destination
+            this.value = util.extract(this.obj, this.destination)
         }
 
         switch(type) {
             case 'number': {
-                const coerced = util.build(this.key, parseFloat(this.value))
+                const coerced = util.build(this.destination, parseFloat(this.value))
                 Object.assign(this.obj, coerced)
                 return this
             }
             case 'string': {
-                const coerced = util.build(this.key, this.value.toString())
+                const coerced = util.build(this.destination, this.value.toString())
                 Object.assign(this.obj, coerced)
                 return this
             }
-            // TODO add array
+            // TODO add case 'array' to coerce comma seperates values to an array
         }
     }
 
