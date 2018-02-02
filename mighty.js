@@ -21,16 +21,19 @@ class Mighty {
         return this
     }
 
-    combine(keys, destination, seperator) {
+    combine(keys, destination, separator) {
         this.destination = destination
 
-        const values = []
-        keys.forEach(key => {
-            values.push(util.extract(this.obj, key))
+        const data = []
+        keys.forEach((key, index) => {
+            const value = util.extract(this.obj, key)
+
+            data.push({ key, value })
+
             this.remove(key)
         }, this)
 
-        this.value = util.merge(values, this.destination, seperator)
+        this.value = util.merge(data)
         const composed = util.build(this.destination, this.value)
         util.assign(this.obj, composed)
 
@@ -73,7 +76,7 @@ class Mighty {
                 Object.assign(this.obj, coerced)
                 return this
             }
-            // TODO add case 'array' to coerce comma seperates values to an array
+            // TODO add case 'array' to coerce comma separates values to an array
         }
     }
 

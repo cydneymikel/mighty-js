@@ -86,46 +86,58 @@ describe('Mighty JS', () => {
     })
 
     describe('combine', () => {
-        it('should combine keys', (done) => {
+        it('should combine keys into destination key', (done) => {
             const obj = {
                 _id: '4',
                 first: 'Kim',
                 last: 'Hart',
                 ranger: 'Pink',
                 transforms: 'pterodactyl dinozord',
-                city: 'Angel Grove',
-                state: 'California'
+                location: {
+                    city: 'Angel Grove',
+                    state: 'California'
+                },
+                coordinates: ['34.0522 N', '118.2437 W'],
+                zip: 94115
             }
 
             mighty(obj)
-                .combine(['first', 'last'], 'name')
+                .combine(['zip', 'location', 'coordinates'], 'hometown')
                 .result
 
-            expect(obj).to.have.property('name')
-            expect(obj.name).to.equal('Kim Hart')
+            expect(obj).to.not.have.property('location')
+            expect(obj).to.not.have.property('coordinates')
+
+            expect(obj).to.have.property('hometown')
+            expect(obj.hometown).to.have.property('city')
+            expect(obj.hometown).to.have.property('state')
+            expect(obj.hometown).to.have.property('coordinates')
 
             done()
         })
 
-        it('should combine nested keys', (done) => {
+        it('should combine keys and nested keys into destination', (done) => {
             const obj = {
                 _id: '4',
                 name: 'Kim Hart',
                 ranger: 'Pink',
                 transforms: 'pterodactyl dinozord',
                 location: {
-                    city: 'Angel Grove',
-                    state: 'California'
-                }
+                    city: 'Angel Grove'
+                },
+                state: 'California'
             }
 
             mighty(obj)
-                .combine(['location.city', 'location.state'], 'homewtown', ', ')
+                .combine(['location.city', 'state'], 'hometown')
                 .result
 
             expect(obj).to.not.have.property('location')
-            expect(obj).to.have.property('homewtown')
-            expect(obj.homewtown).to.equal('Angel Grove, California')
+            expect(obj).to.not.have.property('state')
+
+            expect(obj).to.have.property('hometown')
+            expect(obj.hometown).to.have.property('city')
+            expect(obj.hometown).to.have.property('state')
 
             done()
         })

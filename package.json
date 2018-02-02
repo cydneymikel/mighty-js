@@ -1,7 +1,13 @@
 {
   "name": "mighty-js",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Library for transforming objects and coercing types using chaining and dot notation",
+  "keywords": [
+    "object transformer",
+    "chaining",
+    "dot notation",
+    "transform objects"
+  ],
   "main": "mighty.js",
   "scripts": {
     "test": "mocha test/"

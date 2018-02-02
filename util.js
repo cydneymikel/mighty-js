@@ -52,25 +52,21 @@ module.exports = {
         * IN PROGRESS
         * @description      merges/combines values
         * @arguments
-            keys            array of values to combine
-            destination     destination key
-            seperator       seperator for the combined key (optional)
+            data            array of values, keys to combine
     */
-    merge(values, destination, seperator) {
-        let merged = ''
+    merge(data) {
+        const merged = {}
+        data.forEach((datum, index) => {
+            const
+                { value } = datum,
+                { type } = this.type(value)
 
-        values.forEach((value, index) => {
-            if (typeof value === 'string') {
-                if (index !== values.length - 1)
-                    merged += value + (seperator || ' ')
-                else
-                    merged += value
-            }
-            // else if (typeof value === 'number')
+            const key = this.lastKey(datum.key)
 
-            // else if (typeof value === 'object'  && value instanceof Array)
-
-            // else
+            if (type === 'object')
+                Object.assign(merged, value)
+            else
+                Object.assign(merged, { [key]: value })
 
         })
 
@@ -78,6 +74,7 @@ module.exports = {
     },
 
     /*
+        * IN PROGRESS
         * @description      assigns the new composed key to the object
         * @arguments
             obj             original object passed into mighty
@@ -90,6 +87,32 @@ module.exports = {
             else
                 Object.assign(obj, composed)
         })
+    },
+
+    /*
+        * @description      return last key in dot notation
+        * @arguments
+            keys            path to key using dot notation
+    */
+    lastKey(keys) {
+        return keys.split('.').pop()
+    },
+
+    /*
+        * @description      returns the type (number, string, array, object)
+                            of the value and a base
+        * @arguments
+            value           value to determine type
+    */
+    type(value) {
+        if (typeof value === 'string')
+            return { type: 'string', base: '' }
+        else if (typeof value === 'number')
+            return { type: 'number', base: 0 }
+        else if (typeof value === 'object'  && value instanceof Array)
+            return { type: 'array', base: [] }
+        else
+            return { type: 'object', base: {} }
     },
 
     /*
